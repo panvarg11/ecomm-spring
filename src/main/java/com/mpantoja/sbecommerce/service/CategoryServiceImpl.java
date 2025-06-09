@@ -3,12 +3,16 @@ package com.mpantoja.sbecommerce.service;
 import com.mpantoja.sbecommerce.exceptions.APIException;
 import com.mpantoja.sbecommerce.exceptions.ResourceNotFoundException;
 import com.mpantoja.sbecommerce.model.Category;
+import com.mpantoja.sbecommerce.payload.CategoryDTO;
+import com.mpantoja.sbecommerce.payload.CategoryResponse;
 import com.mpantoja.sbecommerce.repositories.CategoryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService{
@@ -18,13 +22,21 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public List<Category> getAllCategories() {
+    public CategoryResponse getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         if (categories.isEmpty()){
             throw new APIException("No Categories Found");
         }
-        return categories;
+
+        List<CategoryDTO> categoryDTOS= categories.stream().map(
+                category -> modelMapper.map(category, CategoryDTO.class)).toList();
+        CategoryResponse categoryResponse = new CategoryResponse();
+        categoryResponse.setContent(categoryDTOS);
+        return categoryResponse;
     }
 
     @Override
@@ -44,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService{
                         ()->new ResourceNotFoundException("category ", "Id ",categoryId));
 //
 
-        categoryRepository.delete(category);git s
+        categoryRepository.delete(category);
         return "category with ID "+categoryId+ " has been removed successfully";
     }
 
