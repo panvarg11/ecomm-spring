@@ -1,6 +1,7 @@
 package com.mpantoja.sbecommerce.controller;
 
 import com.mpantoja.sbecommerce.model.Category;
+import com.mpantoja.sbecommerce.payload.CategoryDTO;
 import com.mpantoja.sbecommerce.payload.CategoryResponse;
 import com.mpantoja.sbecommerce.service.CategoryService;
 import jakarta.validation.Valid;
@@ -29,9 +30,10 @@ public class CategoryController {
     }
 
     @PostMapping("/admin/category")
-    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
-        categoryService.addCategory(category);
-        return new ResponseEntity<>(category.getCategoryId() +" Category Added Successfully", HttpStatus.CREATED);
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO storedCategory = categoryService.addCategory(categoryDTO);
+
+        return new ResponseEntity<>(storedCategory, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
