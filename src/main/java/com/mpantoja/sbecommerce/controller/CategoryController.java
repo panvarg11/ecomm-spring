@@ -1,6 +1,5 @@
 package com.mpantoja.sbecommerce.controller;
 
-import com.mpantoja.sbecommerce.model.Category;
 import com.mpantoja.sbecommerce.payload.CategoryDTO;
 import com.mpantoja.sbecommerce.payload.CategoryResponse;
 import com.mpantoja.sbecommerce.service.CategoryService;
@@ -8,9 +7,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 
 @RestController
@@ -25,8 +21,10 @@ public class CategoryController {
 
 
     @GetMapping("/public/categories")
-    public ResponseEntity<CategoryResponse> showAllCategories() {
-        CategoryResponse categoryResponse = categoryService.getAllCategories();
+    public ResponseEntity<CategoryResponse> getAllCategories(
+            @RequestParam(name = "pageNumber") Integer pageNumber,
+            @RequestParam(name = "pageSize") Integer pageSize) {
+        CategoryResponse categoryResponse = categoryService.getAllCategories(pageNumber, pageSize);
         return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
