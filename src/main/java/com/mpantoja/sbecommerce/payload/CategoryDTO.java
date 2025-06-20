@@ -17,4 +17,5 @@ public class CategoryDTO {
     @Size(min=5, message = "Category Name must Contain at least 5 Characters.")
     private String categoryName;
 
+
 }

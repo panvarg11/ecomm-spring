@@ -1,4 +1,4 @@
-package com.mpantoja.sbecommerce.service;
+ package com.mpantoja.sbecommerce.service;
 
 import com.mpantoja.sbecommerce.exceptions.APIException;
 import com.mpantoja.sbecommerce.exceptions.ResourceNotFoundException;
@@ -33,8 +33,8 @@ public class CategoryServiceImpl implements CategoryService {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 :Sort.by(sortBy).descending();
-        Pageable pagedetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Page<Category> categoryPage= categoryRepository.findAll(pagedetails);
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
+        Page<Category> categoryPage= categoryRepository.findAll(pageDetails);
 
 
         List<Category> categories = categoryPage.getContent();
@@ -62,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category categoryInDataBase = categoryRepository.findByCategoryName(receivedCategory.
                 getCategoryName());
         if (categoryInDataBase != null) {
-            throw new APIException("Category with name \"" + categoryDTO.getCategoryName() + "\" Already exists");
+            throw new APIException("Category with name \"" + categoryDTO.getCategoryName() + "\" Already exists with id "+categoryDTO.getCategoryId());
         }
         Category savedCategory = categoryRepository.save(receivedCategory);
 
@@ -91,7 +91,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(categoryDTOId).
                 orElseThrow(
                         () -> new ResourceNotFoundException("category ", "Id ", categoryDTOId));
-//
         CategoryDTO deletedCategoryDTO = modelMapper.map(category, CategoryDTO.class);
         categoryRepository.delete(category);
 
