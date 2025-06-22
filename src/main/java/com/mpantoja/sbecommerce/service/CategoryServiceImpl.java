@@ -1,5 +1,6 @@
- package com.mpantoja.sbecommerce.service;
+package com.mpantoja.sbecommerce.service;
 
+import com.mpantoja.sbecommerce.Utils.PaginationUtil;
 import com.mpantoja.sbecommerce.exceptions.APIException;
 import com.mpantoja.sbecommerce.exceptions.ResourceNotFoundException;
 import com.mpantoja.sbecommerce.model.Category;
@@ -30,11 +31,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
 
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
-                ? Sort.by(sortBy).ascending()
-                :Sort.by(sortBy).descending();
-        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Page<Category> categoryPage= categoryRepository.findAll(pageDetails);
+        Pageable pageDetails = PaginationUtil.buildPageRequest(pageNumber, pageSize, sortBy, sortOrder);
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
 
 
         List<Category> categories = categoryPage.getContent();
@@ -44,14 +42,8 @@ public class CategoryServiceImpl implements CategoryService {
 
         List<CategoryDTO> categoryDTOS = categories.stream().map(
                 category -> modelMapper.map(category, CategoryDTO.class)).toList();
-        CategoryResponse categoryResponse = new CategoryResponse();
-        categoryResponse.setContent(categoryDTOS);
-        categoryResponse.setPageNumber(categoryPage.getNumber());
-        categoryResponse.setPageSize(categoryPage.getSize());
-        categoryResponse.setTotalElements(categoryPage.getTotalElements());
-        categoryResponse.setTotalPages(categoryPage.getTotalPages());
-        categoryResponse.setLastPage(categoryPage.isLast());
-        return categoryResponse;
+        return new CategoryResponse(categoryDTOS, categoryPage.getNumber(), categoryPage.getSize(),
+                categoryPage.getTotalElements(), categoryPage.getTotalPages(), categoryPage.isLast());
     }
 
     @Override
@@ -62,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category categoryInDataBase = categoryRepository.findByCategoryName(receivedCategory.
                 getCategoryName());
         if (categoryInDataBase != null) {
-            throw new APIException("Category with name \"" + categoryDTO.getCategoryName() + "\" Already exists with id "+categoryDTO.getCategoryId());
+            throw new APIException("Category with name \"" + categoryDTO.getCategoryName() + "\" Already exists with id " + categoryDTO.getCategoryId());
         }
         Category savedCategory = categoryRepository.save(receivedCategory);
 
@@ -72,11 +64,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categorDtoId) {
 
-
         Optional<Category> categoryInDataBase = categoryRepository.findById(categorDtoId);
-        if(categoryInDataBase.isEmpty())throw new ResourceNotFoundException("Category", "ID", categorDtoId);
-        if(categoryRepository.findByCategoryName(categoryDTO.getCategoryName())!=null)
-             throw new APIException("Category with that name already exists :"+categoryDTO.getCategoryName())     ;
+        if (categoryInDataBase.isEmpty()) throw new ResourceNotFoundException("Category", "ID", categorDtoId);
+        if (categoryRepository.findByCategoryName(categoryDTO.getCategoryName()) != null)
+            throw new APIException("Category with that name already exists :" + categoryDTO.getCategoryName());
 
         Category savedCategory = categoryInDataBase.get();
         savedCategory.setCategoryId(categorDtoId);

@@ -1,12 +1,11 @@
 package com.mpantoja.sbecommerce.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.List;
 
 
 @Entity(name = "categories")
@@ -20,7 +19,11 @@ public class Category {
     private Long categoryId;
 
     @NotBlank(message = "Category Name must not be blank")
-    @Size(min=5, message = "Category Name must Contain at least 5 Characters.")
+    @Size(min=3, message = "Category Name must Contain at least 5 Characters.")
     private String categoryName;
+
+    @OneToMany(mappedBy = "category", cascade ={CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    private List<Product> products;
 
 }
