@@ -129,9 +129,8 @@ public class ProductServiceImpl implements ProductService {
 
         productInDataBase.setFinalPrice(
                 calculateSpecialPrice.applyAsDouble(productInDataBase.getPrice(), productInDataBase.getDiscount()));
-        productRepository.save(productInDataBase);
 
-        return modelMapper.map(productInDataBase, ProductDTO.class);
+        return modelMapper.map(productRepository.save(productInDataBase), ProductDTO.class);
     }
 
     @Override
