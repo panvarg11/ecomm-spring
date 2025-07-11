@@ -7,6 +7,9 @@ import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -23,15 +26,15 @@ public class Product {
     @Size(min = 3, message = "Product Name must Contain at least 3 Characters.")
     private String productName;
     private String image;
-    private String description="";
+    private String description = "";
     @PositiveOrZero(message = "must be 0 or above")
-    private Integer quantity=0;
+    private Integer quantity = 0;
 
     @NotNull(message = "Price is mandatory")
     @PositiveOrZero(message = "must be 0 or above")
     private Double price;
     @PositiveOrZero(message = "must be 0 or above")
-    private Double discount=0D;
+    private Double discount = 0D;
     private Double finalPrice;
 
 
@@ -42,6 +45,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "seller_id")
     private User user;
+
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private List<CartItem> products = new ArrayList<>();
 
 
 
