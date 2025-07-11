@@ -5,10 +5,7 @@ import jakarta.transaction.UserTransaction;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +16,7 @@ import java.util.Set;
         @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "email")})
 @ToString
+@Data
 public class User {
 
     @Id
@@ -38,7 +36,7 @@ public class User {
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 16)
+    @Size(min = 4)
     @Column(name = "password")
     private String password;
 
